@@ -5,10 +5,19 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     let query = config.query;
 
-    println!("{contents}");
-    println!("{query}");
-
     Ok(())
+}
+
+pub fn search<'a>(query: &str, content: &'a str) -> Vec<&'a str> {
+    let mut results = Vec::new();
+
+    for line in content.lines() {
+        if line.contains(query) {
+            results.push(line);
+        }
+    }
+
+    results
 }
 
 pub struct Config {
@@ -26,5 +35,18 @@ impl Config {
         let file_path = args[2].clone();
 
         Ok(Self { query, file_path })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn one_result() {
+        let query = "duct";
+        let contents = "Rust:\nsafe, fast, productive.\nPick three.\n";
+
+        assert_eq!(vec!["safe, fast, productive."], search(query, contents));
     }
 }

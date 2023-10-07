@@ -22,6 +22,19 @@ pub fn search<'a>(query: &str, content: &'a str) -> Vec<&'a str> {
     results
 }
 
+pub fn search_case_insensitive<'a>(query: &str, content: &'a str) -> Vec<&'a str> {
+    let query = query.to_lowercase();
+    let mut results = Vec::new();
+
+    for line in content.lines() {
+        if line.to_lowercase().contains(&query) {
+            results.push(line);
+        }
+    }
+
+    results
+}
+
 pub struct Config {
     pub query: String,
     pub file_path: String,
@@ -45,10 +58,21 @@ mod tests {
     use super::*;
 
     #[test]
-    fn one_result() {
+    fn case_sensitive() {
         let query = "duct";
-        let contents = "Rust:\nsafe, fast, productive.\nPick three.\n";
+        let contents = "Rust:\nsafe, fast, productive.\nPick three.\nDuct tape\n";
 
         assert_eq!(vec!["safe, fast, productive."], search(query, contents));
+    }
+
+    #[test]
+    fn case_insensitive() {
+        let query = "rUsT";
+        let contents = "Rust:\nsafe, fast, productive.\nPick three.\nTrust me.\n";
+
+        assert_eq!(
+            vec!["Rust:", "Trust me."],
+            search_case_insensitive(query, contents)
+        );
     }
 }

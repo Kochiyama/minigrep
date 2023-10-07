@@ -1,18 +1,19 @@
-use std::env;
+use std::{env, fs};
 
 fn main() {
-    let mut args = env::args();
+    let args: Vec<String> = env::args().collect();
 
-    args.next();
+    let (query, file_path) = parse_config(&args);
 
-    let query = args
-        .next()
-        .expect("Invalid number of arguments. Please provide a query to search for!");
+    let contents = fs::read_to_string(&file_path).expect("Should have been able to read file.");
 
-    let file_path = args
-        .next()
-        .expect("Invalid number of arguments. Please provide the file path!");
+    println!("{query}");
+    println!("{contents}");
+}
 
-    println!("Searching for {query}");
-    println!("On file at {file_path}");
+fn parse_config(args: &[String]) -> (&str, &str) {
+    let query = &args[1];
+    let file_path = &args[2];
+
+    (query, file_path)
 }
